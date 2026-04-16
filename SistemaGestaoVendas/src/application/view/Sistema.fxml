@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.SistemaController">
+   <children>
+      <AnchorPane fx:id="ap" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <MenuBar layoutX="227.0" layoutY="27.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="Início">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#Logout" text="Logout" />
+                        <MenuItem mnemonicParsing="false" onAction="#Sair" text="Sair" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Cadastros">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#Usuarios" text="Usuários" />
+                        <MenuItem mnemonicParsing="false" onAction="#Produtos" text="Produtos" />
+                        <MenuItem mnemonicParsing="false" onAction="#Clientes" text="Clientes" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Operações">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Processar estoque" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <Label alignment="CENTER" layoutX="306.0" layoutY="123.0" style="-fx-background-color: gray;" text="Sistema de Gestão deVendas e Controle de Estoque" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="ivLogo" fitHeight="189.0" fitWidth="245.0" layoutX="178.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+            <Label fx:id="lblBemVindo" layoutX="50.0" layoutY="192.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

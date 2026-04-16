@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.NovoUsuarioController">
+   <children>
+      <AnchorPane fx:id="ap" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <MenuBar layoutX="84.0" layoutY="2.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="Início">
+                  <items>
+                        <MenuItem mnemonicParsing="false" onAction="#Voltar" text="Voltar ao início" />
+                    <MenuItem mnemonicParsing="false" onAction="#Logout" text="Logout" />
+                        <MenuItem mnemonicParsing="false" onAction="#Sair" text="Sair" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Cadastros">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#Usuarios" text="Usuarios" />
+                        <MenuItem mnemonicParsing="false" onAction="#Produtos" text="Produtos" />
+                        <MenuItem mnemonicParsing="false" onAction="#Clientes" text="Clientes" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Operações">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Processar estoque" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <Button fx:id="btnExcluir" layoutX="145.0" layoutY="210.0" mnemonicParsing="false" onAction="#Excluir" prefHeight="30.0" prefWidth="73.0" text="Excluir" />
+            <Label alignment="CENTER" layoutX="161.0" layoutY="1.0" style="-fx-background-color: gray;" text="Usuários" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="48.0" layoutY="60.0" text="Nome">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtNome" layoutX="48.0" layoutY="78.0" />
+            <TextField fx:id="txtLogin" layoutX="225.0" layoutY="78.0" />
+            <TextField fx:id="txtSenha" layoutX="394.0" layoutY="78.0" />
+            <RadioButton fx:id="rdVendedor" layoutX="99.0" layoutY="130.0" mnemonicParsing="false" selected="true" text="Vendedor">
+               <toggleGroup>
+                  <ToggleGroup fx:id="rdTipo" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="rdEstoquista" layoutX="333.0" layoutY="130.0" mnemonicParsing="false" text="Estoquista" toggleGroup="$rdTipo" />
+            <RadioButton fx:id="rdGerente" layoutX="223.0" layoutY="130.0" mnemonicParsing="false" text="Gerente" toggleGroup="$rdTipo" />
+            <Label layoutX="225.0" layoutY="60.0" text="Nome de usuário">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="394.0" layoutY="60.0" text="Senha">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="48.0" layoutY="136.0" text="Tipo">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Button fx:id="btnCadastrar" layoutX="472.0" layoutY="130.0" mnemonicParsing="false" onAction="#Cadastrar" text="Cadastrar" />
+            <TableView fx:id="tvUsuarios" layoutX="233.0" layoutY="228.0" prefHeight="142.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+              <columns>
+                <TableColumn fx:id="colId" prefWidth="75.0" text="ID" />
+                <TableColumn fx:id="colNome" prefWidth="192.79998779296875" text="Nome" />
+                  <TableColumn fx:id="colUsuario" prefWidth="196.0" text="Nome de Usuário" />
+                  <TableColumn fx:id="colTipo" prefWidth="135.20001220703125" text="Tipo" />
+              </columns>
+            </TableView>
+            <TextField fx:id="txtBuscar" layoutX="48.0" layoutY="173.0" onAction="#Pesquisar" prefHeight="26.0" prefWidth="410.0" promptText="Buscar" />
+            <Button fx:id="btnBuscar" layoutX="471.0" layoutY="171.0" mnemonicParsing="false" onAction="#Pesquisar" prefHeight="30.0" prefWidth="73.0" text="Buscar" />
+            <Button fx:id="btnEditar" layoutX="48.0" layoutY="210.0" mnemonicParsing="false" onAction="#Editar" prefHeight="30.0" prefWidth="73.0" text="Editar" />
+         </children></AnchorPane>
+   </children>
+</StackPane>
