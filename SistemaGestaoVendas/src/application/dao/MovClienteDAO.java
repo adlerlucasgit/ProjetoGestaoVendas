@@ -51,15 +51,15 @@ public class MovClienteDAO {
         String sql = "SELECT id, data, total, status " +
                      "FROM vendas " +
                      "WHERE cliente_id = ? " +
-                     "AND DATE(data) BETWEEN ? AND ? " +
+                     "AND data BETWEEN ? AND ? " +
                      "ORDER BY data DESC";
 
         try (Connection conn = Conexao.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, clienteId);
-            ps.setDate(2, Date.valueOf(inicio));
-            ps.setDate(3, Date.valueOf(fim));
+            ps.setTimestamp(2, Timestamp.valueOf(inicio.atStartOfDay()));
+            ps.setTimestamp(3, Timestamp.valueOf(fim.atTime(23, 59, 59)));
 
             ResultSet rs = ps.executeQuery();
 

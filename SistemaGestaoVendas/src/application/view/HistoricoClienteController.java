@@ -44,17 +44,23 @@ public class HistoricoClienteController {
     private TableView<VendaItemModel> tvItens;
 
     @FXML
+    private TableColumn<VendaItemModel, Integer> colIdItem;
+
+    @FXML
     private TableColumn<VendaItemModel, String> colProduto;
 
     @FXML
     private TableColumn<VendaItemModel, Integer> colIdVenda;
 
     @FXML
-    private TableColumn<VendaItemModel, Double> colPreco;
-
+    private TableColumn<VendaItemModel, String> colPreco;
+    
     @FXML
     private TableColumn<VendaItemModel, Integer> colQuantidade;
-
+    
+    @FXML
+    private TableColumn<VendaItemModel, String> colSubtotal;
+    
     @FXML
     private Label lblCompras;
 
@@ -66,24 +72,20 @@ public class HistoricoClienteController {
 
     private ClienteModel cliente;
 
-    public void initialize(URL location, ResourceBundle resources) {
-
-        // Tabela de compras
+    public void initialize() {
         colId.setCellValueFactory(new PropertyValueFactory<>("vendaId"));
         colData.setCellValueFactory(new PropertyValueFactory<>("data"));
         colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Tabela de itens
+        colIdItem.setCellValueFactory(new PropertyValueFactory<>("id"));
         colProduto.setCellValueFactory(new PropertyValueFactory<>("produto"));
         colIdVenda.setCellValueFactory(new PropertyValueFactory<>("vendaId"));
-        colPreco.setCellValueFactory(new PropertyValueFactory<>("preco"));
+        colPreco.setCellValueFactory(new PropertyValueFactory<>("precoFormatado"));
         colQuantidade.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
+        colSubtotal.setCellValueFactory(new PropertyValueFactory<>("subtotalFormatado"));
 
-        tvCompras.setOnMouseClicked(event -> {
-
-            MovClienteModel vendaSelecionada =
-                    tvCompras.getSelectionModel().getSelectedItem();
+        tvCompras.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, vendaSelecionada) -> {
 
             if (vendaSelecionada != null) {
 
@@ -105,6 +107,12 @@ public class HistoricoClienteController {
         if (cliente != null) {
             lblCompras.setText("Cliente: " + cliente.getNome());
 
+            if (dtInicio.getValue() == null || dtFinal.getValue() == null) {
+                LocalDate hoje = LocalDate.now();
+                dtInicio.setValue(hoje.minusDays(30));
+                dtFinal.setValue(hoje);
+            }
+
             BuscarHistorico(cliente.getId(), dtInicio.getValue(), dtFinal.getValue());
         }
     }
@@ -121,6 +129,8 @@ public class HistoricoClienteController {
 
         List<MovClienteModel> listaHistorico =
                 new MovClienteDAO().buscarPorClientePeriodo(idCliente, dataInicio, dataFinal);
+
+        System.out.println("Registros encontrados: " + listaHistorico.size());
 
         tvCompras.setItems(FXCollections.observableArrayList(listaHistorico));
     }
