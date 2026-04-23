@@ -45,6 +45,7 @@ public class TelaInicialController {
     public class Sessao {
         public static String tipoUsuario;
         public static String Usuario;
+        public static int IdUser;
     }
     
     public void Entrar() {

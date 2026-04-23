@@ -1,37 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
-
+<?import javafx.scene.text.Font?>
 
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.MovEstoqueController">
    <children>
-      <AnchorPane fx:id="ap" prefHeight="200.0" prefWidth="200.0">
+      <AnchorPane fx:id="ap" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0">
          <children>
+            <ImageView fx:id="ivLogo" fitHeight="150.0" fitWidth="200.0" layoutX="396.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
             <MenuBar layoutX="168.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <menus>
-                <Menu mnemonicParsing="false" text="Início">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Cadastros">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Usuários" />
-                        <MenuItem mnemonicParsing="false" text="Produtos" />
-                        <MenuItem mnemonicParsing="false" text="Clientes" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Operações">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Processar estoque" />
-                  </items>
-                </Menu>
-              </menus>
+               <menus>
+                  <Menu mnemonicParsing="false" text="Início">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#Voltar" text="Voltar ao início" />
+                        <MenuItem mnemonicParsing="false" onAction="#Logout" text="Logout" />
+                        <MenuItem mnemonicParsing="false" onAction="#Sair" text="Sair" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Cadastros">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#Usuarios" text="Usuários" />
+                        <MenuItem mnemonicParsing="false" onAction="#Produtos" text="Produtos" />
+                        <MenuItem mnemonicParsing="false" onAction="#Clientes" text="Clientes" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Operações">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#MovEstoque" text="Processar estoque" />
+                     </items>
+                  </Menu>
+               </menus>
             </MenuBar>
+            <Label alignment="CENTER" layoutX="272.0" layoutY="82.0" style="-fx-background-color: gray;" text="Processamento do Estoque" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <TableView fx:id="tvMov" layoutX="200.0" layoutY="186.0" prefHeight="175.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <columns>
+                  <TableColumn fx:id="colIdM" prefWidth="61.5999755859375" text="ID" />
+                  <TableColumn fx:id="colProdM" prefWidth="99.20001220703125" text="Produto" />
+                  <TableColumn fx:id="colCatM" prefWidth="104.7999267578125" text="Categoria" />
+                  <TableColumn fx:id="colCustoM" prefWidth="67.20001220703125" text="Custo" />
+                  <TableColumn fx:id="colValorM" prefWidth="102.39996337890625" text="Valor  venda" />
+                  <TableColumn fx:id="colQtdM" prefWidth="75.20001220703125" text="Quantidade" />
+                  <TableColumn fx:id="colMin" prefWidth="86.4000244140625" text="Estoque Min" />
+               </columns>
+            </TableView>
+            <RadioButton layoutX="337.0" layoutY="104.0" mnemonicParsing="false" selected="true" text="Entrada">
+               <toggleGroup>
+                  <ToggleGroup fx:id="rdOp" />
+               </toggleGroup></RadioButton>
+            <RadioButton layoutX="412.0" layoutY="105.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="73.0" text="Saída" toggleGroup="$rdOp" />
+            <Button fx:id="btnHistorico" layoutX="486.0" layoutY="149.0" mnemonicParsing="false" onAction="#Historico" prefHeight="26.0" prefWidth="74.0" text="Histórico" />
+            <Button fx:id="btnBuscar" layoutX="486.0" layoutY="187.0" mnemonicParsing="false" onAction="#Pesquisar" prefHeight="26.0" prefWidth="74.0" text="Buscar" />
+            <TextField fx:id="txtNome" disable="true" layoutX="124.0" layoutY="101.0" prefHeight="26.0" prefWidth="112.0" promptText="Nome" />
+            <TextField fx:id="txtQuantidade" layoutX="250.0" layoutY="102.0" prefHeight="26.0" prefWidth="74.0" promptText="0" />
+            <TextField fx:id="txtId" disable="true" layoutX="47.0" layoutY="101.0" prefHeight="26.0" prefWidth="64.0" promptText="000000" />
+            <Label layoutX="47.0" layoutY="85.0" text="ID">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="124.0" layoutY="85.0" text="Produto">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="250.0" layoutY="85.0" text="Quantidade">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="337.0" layoutY="85.0" text="Tipo">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtBuscar" layoutX="49.0" layoutY="187.0" onAction="#Pesquisar" prefHeight="26.0" prefWidth="414.0" />
+            <Button fx:id="btnProcessar" layoutX="486.0" layoutY="104.0" mnemonicParsing="false" onAction="#Processar" prefHeight="26.0" prefWidth="74.0" text="Processar" />
+            <Button fx:id="btnMin" layoutX="215.0" layoutY="149.0" mnemonicParsing="false" onAction="#setMin" prefHeight="26.0" prefWidth="143.0" text="Setar estoque mínimo" />
+            <TextField fx:id="txtMin" layoutX="49.0" layoutY="149.0" onAction="#setMin" />
+            <Label layoutX="47.0" layoutY="130.0" text="Quantidade mínima">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </children>

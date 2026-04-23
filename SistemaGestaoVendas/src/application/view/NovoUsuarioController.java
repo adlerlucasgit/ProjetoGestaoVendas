@@ -14,6 +14,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
 public class NovoUsuarioController extends TelaInicialController {
@@ -71,6 +73,10 @@ public class NovoUsuarioController extends TelaInicialController {
 
 	@FXML
 	private TableColumn<UsuarioModel, String> colUsuario;
+	
+    @FXML
+    private ImageView ivLogo;
+    private Image logo;    
 
 	UsuarioModel usuario = new UsuarioModel(0, null, null, null, null);
 	UsuarioDAO dao = new UsuarioDAO();
@@ -103,6 +109,11 @@ public class NovoUsuarioController extends TelaInicialController {
 		carregarTela("Clientes.fxml");
 	}
 	
+    @FXML
+    public void MovEstoque() {
+        carregarTela("MovEstoque.fxml");
+    }
+	
 	@FXML
 	public void Produtos() {
 		if(Sessao.tipoUsuario.equals("ESTOQUISTA") || Sessao.tipoUsuario.equals("GERENTE")) {
@@ -119,9 +130,17 @@ public class NovoUsuarioController extends TelaInicialController {
     public void Voltar() {
         carregarTela("Sistema.fxml");
     }
+    
+	public String FormatarID(int id) {
+	    return String.format("%06d", id);
+	}
+	
 
 	public void initialize() {
-		colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+		logo = new Image(getClass().getResourceAsStream("LogoETDv4.png"));
+		ivLogo.setImage(logo);
+		
+		colId.setCellValueFactory(new PropertyValueFactory<>("idFormatado"));
 		colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		colUsuario.setCellValueFactory(new PropertyValueFactory<>("login"));
 		colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
@@ -179,12 +198,12 @@ public class NovoUsuarioController extends TelaInicialController {
 			a.setHeaderText("Nome de usuário já está em uso");
 			a.showAndWait();
 		} else {
-			dao.inserirUsuario(u);
 			if (dao.inserirUsuario(u)) {
 				Alert a = new Alert(Alert.AlertType.INFORMATION);
 				a.setTitle("Sucesso!");
 				a.setHeaderText("Usuário cadastrado");
 				a.showAndWait();
+				carregarTabela(null);
 				limparCampos();
 			}
 		}

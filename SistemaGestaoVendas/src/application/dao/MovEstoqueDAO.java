@@ -9,85 +9,78 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application.model.MovEstoqueModel;
+import application.model.ProdutoModel;
 import application.util.Conexao;
 import javafx.scene.control.Alert;
 
 public class MovEstoqueDAO {
 	public void InsereMovimentacao(MovEstoqueModel m) {
-		try(Connection conn = Conexao.getConnection();
-				PreparedStatement consulta = conn.prepareStatement("INSERT INTO movimentacaoEstoque "
-						+ "(idProd,dataHora,quantidade,tipo) VALUES (?,NOW(),?,?)");){
-			int tipo = 0;
-			if(m.getTipo().equals("Saída")) {
-				tipo = 1;
-			}
+		String sql = "INSERT INTO estoqueMovimentacao " + "(produto_id, tipo, quantidade, data) "
+				+ "VALUES (?, ?, ?, NOW())";
+		
+		try (Connection conn = Conexao.getConnection(); PreparedStatement consulta = conn.prepareStatement(sql)) {
+
 			consulta.setInt(1, m.getIdProd());
-			consulta.setInt(2, m.getQuantidade());
-			consulta.setInt(3, tipo);
+			consulta.setString(2, m.getTipo().toUpperCase());
+			consulta.setInt(3, m.getQuantidade());
 			consulta.executeUpdate();
-			
-			Alert mensagem = new Alert(Alert.AlertType.CONFIRMATION);
-			mensagem.setContentText("Estoque processado");
-			mensagem.showAndWait();
-		} catch(Exception e) {
-			e.printStackTrace();
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+
+		    Alert erro = new Alert(Alert.AlertType.ERROR);
+		    erro.setContentText("Erro ao salvar: " + e.getMessage());
+		    erro.showAndWait();
 		}
 	}
-	
-	public List<MovEstoqueModel> HistoricoMovimentacao(int idProd, LocalDate dataInicio, LocalDate dataFim) {
-	    List<MovEstoqueModel> movimentacao = new ArrayList<MovEstoqueModel>();
 
-	    String sql = "SELECT " +
-	             "DATE_FORMAT(m.dataHora, '%d/%m/%Y %H:%i:%s') AS data, " +
-	             "m.id, " +
-	             "m.idProd, " +
-	             "p.nome, " +
-	             "m.quantidade, " +
-	             "u.nome AS usuario, " +
-	             "CASE " +
-	             "    WHEN m.tipo = 0 THEN 'Entrada' " +
-	             "    WHEN m.tipo = 1 THEN 'Saída' " +
-	             "    ELSE 'Não Informado' " +
-	             "END AS tipo " +
-	             "FROM produtos p " +
-	             "INNER JOIN movimentacaoEstoque m ON p.id = m.idProd " +
-	             "INNER JOIN usuarios u ON u.id = m.idUser " +
-	             "WHERE p.id = ? " +
-	             "AND m.dataHora >= ? AND m.dataHora < ? " +
-	             "ORDER BY m.dataHora DESC";
+	public static List<MovEstoqueModel> HistoricoMovimentacao() {
+		List<MovEstoqueModel> movimentacao = new ArrayList<>();
 
-	    try (Connection conn = Conexao.getConnection();
-	         PreparedStatement consulta = conn.prepareStatement(sql)) {
-	    	
-	    	if(idProd == 0) {
-	    		consulta.setNull(1, java.sql.Types.INTEGER);
-	    	}else {
-		        consulta.setInt(1, idProd);
-	    	}
-	    	
-	        consulta.setTimestamp(2, java.sql.Timestamp.valueOf(dataInicio.atStartOfDay()));
-	        consulta.setTimestamp(3, java.sql.Timestamp.valueOf(dataFim.plusDays(1).atStartOfDay()));
-	        
-	        ResultSet resultado = consulta.executeQuery();
+		String sql = "SELECT " + "DATE_FORMAT(m.data, '%d/%m/%Y %H:%i:%s') AS data, " + "m.id, "
+				+ "m.produto_id AS idProd, " + "p.nome, " + "m.quantidade, " + "m.tipo " + "FROM estoqueMovimentacao m "
+				+ "INNER JOIN produtos p ON p.id = m.produto_id " + "ORDER BY m.data DESC";
 
-	        while (resultado.next()) {
-	            MovEstoqueModel m = new MovEstoqueModel(
-	                    resultado.getInt("id"),
-	                    resultado.getInt("idProd"),
-	                    resultado.getInt("idUser"),
-	                    resultado.getString("nome"),
-	                    resultado.getString("data"),
-	                    resultado.getInt("quantidade"),
-	                    resultado.getString("tipo")
-	                    );
-	            movimentacao.add(m);
-	        }
+		try (Connection conn = Conexao.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(sql);
+				ResultSet rs = stmt.executeQuery()) {
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
+			while (rs.next()) {
+				MovEstoqueModel m = new MovEstoqueModel(rs.getInt("id"), rs.getInt("idProd"), rs.getString("nome"),
+						rs.getString("data"), rs.getInt("quantidade"), rs.getString("tipo"));
+				movimentacao.add(m);
+			}
 
-	    return movimentacao;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return movimentacao;
+	}
+
+	public List<MovEstoqueModel> HistoricoMovimentacaoFiltro(String filtro) {
+		List<MovEstoqueModel> movimentacao = new ArrayList<>();
+
+		String sql = "SELECT " + "DATE_FORMAT(m.data, '%d/%m/%Y %H:%i:%s') AS data, " + "m.id, "
+				+ "m.produto_id AS idProd, " + "p.nome, " + "m.quantidade, " + "m.tipo " + "FROM estoqueMovimentacao m "
+				+ "INNER JOIN produtos p ON p.id = m.produto_id " + "WHERE p.nome LIKE ? " + "ORDER BY m.data DESC";
+
+		try (Connection conn = Conexao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+			stmt.setString(1, "%" + filtro + "%");
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				MovEstoqueModel m = new MovEstoqueModel(rs.getInt("id"), rs.getInt("idProd"), rs.getString("nome"),
+						rs.getString("data"), rs.getInt("quantidade"), rs.getString("tipo"));
+				movimentacao.add(m);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return movimentacao;
 	}
 
 }

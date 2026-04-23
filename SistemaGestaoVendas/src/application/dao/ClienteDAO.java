@@ -14,8 +14,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 public class ClienteDAO {
-	public static boolean encontrou;
-
 	public boolean inserirCliente(ClienteModel cliente) {
 		String sql = "INSERT INTO clientes (nome, cpf_cnpj, email, status) VALUES (?, ?, ?, ?)";
 
@@ -129,7 +127,6 @@ public class ClienteDAO {
 			} else {
 				Alert mensagem = new Alert(Alert.AlertType.ERROR);
 				mensagem.setContentText("Cliente não encontrado!");
-				encontrou = false;
 				mensagem.showAndWait();
 				return null;
 			}

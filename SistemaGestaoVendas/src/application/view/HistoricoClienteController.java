@@ -1,10 +1,7 @@
 package application.view;
 
-import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import application.dao.MovClienteDAO;
 import application.dao.VendaItemDAO;
@@ -13,11 +10,12 @@ import application.model.MovClienteModel;
 import application.model.VendaItemModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
 public class HistoricoClienteController {
@@ -64,15 +62,17 @@ public class HistoricoClienteController {
     @FXML
     private Label lblCompras;
 
-    @FXML
-    private DatePicker dtInicio;
-
-    @FXML
-    private DatePicker dtFinal;
-
     private ClienteModel cliente;
+    
+    @FXML
+    private ImageView ivLogo;
+    private Image logo;
 
     public void initialize() {
+		logo = new Image(getClass().getResourceAsStream("LogoETDv4.png"));
+		ivLogo.setImage(logo);
+		
+
         colId.setCellValueFactory(new PropertyValueFactory<>("vendaId"));
         colData.setCellValueFactory(new PropertyValueFactory<>("data"));
         colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
@@ -95,10 +95,6 @@ public class HistoricoClienteController {
                 tvItens.setItems(FXCollections.observableArrayList(itens));
             }
         });
-
-        LocalDate hoje = LocalDate.now();
-        dtInicio.setValue(hoje.minusDays(30));
-        dtFinal.setValue(hoje);
     }
 
     public void setCliente(ClienteModel cliente) {
@@ -107,28 +103,18 @@ public class HistoricoClienteController {
         if (cliente != null) {
             lblCompras.setText("Cliente: " + cliente.getNome());
 
-            if (dtInicio.getValue() == null || dtFinal.getValue() == null) {
-                LocalDate hoje = LocalDate.now();
-                dtInicio.setValue(hoje.minusDays(30));
-                dtFinal.setValue(hoje);
-            }
-
-            BuscarHistorico(cliente.getId(), dtInicio.getValue(), dtFinal.getValue());
+            BuscarHistorico(cliente.getId());
         }
     }
 
-    public void BuscarHistorico(int idCliente, LocalDate dataInicio, LocalDate dataFinal) {
+    public void BuscarHistorico(int idCliente) {
 
-        if (idCliente <= 0 || dataInicio == null || dataFinal == null) {
-            return;
-        }
-
-        if (dataInicio.isAfter(dataFinal)) {
+        if (idCliente <= 0) {
             return;
         }
 
         List<MovClienteModel> listaHistorico =
-                new MovClienteDAO().buscarPorClientePeriodo(idCliente, dataInicio, dataFinal);
+                new MovClienteDAO().buscarPorCliente(idCliente);
 
         System.out.println("Registros encontrados: " + listaHistorico.size());
 
@@ -141,13 +127,6 @@ public class HistoricoClienteController {
             return;
         }
 
-        LocalDate inicio = dtInicio.getValue();
-        LocalDate fim = dtFinal.getValue();
-
-        if (inicio == null || fim == null) {
-            return;
-        }
-
-        BuscarHistorico(cliente.getId(), inicio, fim);
+        BuscarHistorico(cliente.getId());
     }
 }

@@ -44,40 +44,4 @@ public class MovClienteDAO {
         return lista;
     }
     
-    public List<MovClienteModel> buscarPorClientePeriodo(int clienteId, LocalDate inicio, LocalDate fim) {
-
-        List<MovClienteModel> lista = new ArrayList<>();
-
-        String sql = "SELECT id, data, total, status " +
-                     "FROM vendas " +
-                     "WHERE cliente_id = ? " +
-                     "AND data BETWEEN ? AND ? " +
-                     "ORDER BY data DESC";
-
-        try (Connection conn = Conexao.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, clienteId);
-            ps.setTimestamp(2, Timestamp.valueOf(inicio.atStartOfDay()));
-            ps.setTimestamp(3, Timestamp.valueOf(fim.atTime(23, 59, 59)));
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                MovClienteModel mov = new MovClienteModel(
-                        rs.getInt("id"),
-                        rs.getTimestamp("data").toLocalDateTime(),
-                        rs.getDouble("total"),
-                        rs.getString("status")
-                );
-
-                lista.add(mov);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return lista;
-    }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
@@ -25,7 +25,7 @@
 						<TableColumn fx:id="colData" prefWidth="153.5999755859375" text="Data" />
 					</columns>
 				</TableView>
-				<Label fx:id="lblCompras" layoutX="14.0" layoutY="121.0" text="Ultimas compras de ">
+				<Label fx:id="lblCompras" layoutX="14.0" layoutY="110.0" text="Ultimas compras de ">
 					<font>
 						<Font name="System Bold" size="12.0" />
 					</font>
@@ -40,8 +40,7 @@
 						<TableColumn fx:id="colSubtotal" text="Subtotal" />
 					</columns>
 				</TableView>
-				<DatePicker fx:id="dtInicio" layoutX="86.0" layoutY="95.0" />
-				<DatePicker fx:id="dtFinal" layoutX="322.0" layoutY="95.0" />
+            <ImageView fx:id="ivLogo" fitHeight="150.0" fitWidth="200.0" layoutX="396.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
 			</children>
 		</AnchorPane>
 	</children>

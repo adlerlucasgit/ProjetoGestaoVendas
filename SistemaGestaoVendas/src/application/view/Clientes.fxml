@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
@@ -16,6 +17,7 @@
    <children>
       <AnchorPane fx:id="ap" prefHeight="200.0" prefWidth="200.0">
          <children>
+            <ImageView fx:id="ivLogo" fitHeight="150.0" fitWidth="200.0" layoutX="396.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
             <MenuBar layoutX="203.0" layoutY="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <menus>
                 <Menu mnemonicParsing="false" text="Início">
@@ -34,7 +36,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Operações">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Processar estoque" />
+                    <MenuItem mnemonicParsing="false" onAction="#MovEstoque" text="Processar estoque" />
                   </items>
                 </Menu>
               </menus>
@@ -55,27 +57,27 @@
             </TableView>
             <Button fx:id="btnEditar" layoutX="45.0" layoutY="170.0" mnemonicParsing="false" onAction="#Editar" prefHeight="30.0" prefWidth="73.0" text="Editar" />
             <Button fx:id="btnBuscar" layoutX="480.0" layoutY="131.0" mnemonicParsing="false" onAction="#Pesquisar" prefHeight="30.0" prefWidth="73.0" text="Buscar" />
-            <TextField fx:id="txtBuscar" layoutX="48.0" layoutY="133.0" onAction="#Pesquisar" prefHeight="26.0" prefWidth="419.0" promptText="Buscar" />
-            <Label layoutX="328.0" layoutY="60.0" text="E-mail">
+            <TextField fx:id="txtBuscar" layoutX="45.0" layoutY="133.0" onAction="#Pesquisar" prefHeight="26.0" prefWidth="422.0" promptText="Buscar" />
+            <Label layoutX="328.0" layoutY="69.0" text="E-mail">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label layoutX="191.0" layoutY="60.0" text="CPF/CNPJ">
+            <Label layoutX="191.0" layoutY="69.0" text="CPF/CNPJ">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <TextField fx:id="txtEmail" layoutX="330.0" layoutY="78.0" prefHeight="26.0" prefWidth="138.0" />
-            <TextField fx:id="txtCpfCnpj" layoutX="191.0" layoutY="78.0" prefHeight="26.0" prefWidth="122.0" />
+            <TextField fx:id="txtEmail" layoutX="328.0" layoutY="91.0" prefHeight="26.0" prefWidth="138.0" />
+            <TextField fx:id="txtCpfCnpj" layoutX="191.0" layoutY="91.0" prefHeight="26.0" prefWidth="122.0" />
             <Button fx:id="btnExcluir" layoutX="154.0" layoutY="170.0" mnemonicParsing="false" onAction="#Excluir" prefHeight="30.0" prefWidth="73.0" text="Excluir" />
-            <TextField fx:id="txtNome" layoutX="48.0" layoutY="78.0" prefHeight="26.0" prefWidth="131.0" />
-            <Label layoutX="48.0" layoutY="60.0" text="Nome">
+            <TextField fx:id="txtNome" layoutX="45.0" layoutY="93.0" prefHeight="26.0" prefWidth="131.0" />
+            <Label layoutX="48.0" layoutY="69.0" text="Nome">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Button fx:id="btnCadastrar" layoutX="480.0" layoutY="76.0" mnemonicParsing="false" onAction="#Cadastrar" prefHeight="30.0" prefWidth="73.0" text="Cadastrar" />
+            <Button fx:id="btnCadastrar" layoutX="480.0" layoutY="89.0" mnemonicParsing="false" onAction="#Cadastrar" prefHeight="30.0" prefWidth="73.0" text="Cadastrar" />
             <Button fx:id="btnAtivarDesativar" layoutX="273.0" layoutY="170.0" mnemonicParsing="false" onAction="#AtivarDesativar" prefHeight="30.0" prefWidth="109.0" text="Ativar/Desativar" />
             <Button fx:id="btnHistorico" layoutX="432.0" layoutY="170.0" mnemonicParsing="false" onAction="#Historico" prefHeight="30.0" prefWidth="122.0" text="Histórico do Cliente" />
          </children>

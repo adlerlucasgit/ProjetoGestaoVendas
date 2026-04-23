@@ -18,6 +18,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -69,8 +71,12 @@ public class ClientesController extends TelaInicialController {
 
 	@FXML
 	private TextField txtNome;
+	
+    @FXML
+    private ImageView ivLogo;
+    private Image logo;
 
-	ClienteModel cliente = new ClienteModel(0, null, null, null, null);
+	public ClienteModel cliente = new ClienteModel(0, null, null, null, null);
 	ClienteDAO dao = new ClienteDAO();
 	private ClienteModel clienteSelecionado;
 
@@ -83,6 +89,11 @@ public class ClientesController extends TelaInicialController {
 	public void Sair() {
 		System.exit(0);
 	}
+	
+    @FXML
+    public void MovEstoque() {
+        carregarTela("MovEstoque.fxml");
+    }
 
 	public void Usuarios() {
 		if(Sessao.tipoUsuario.equals("GERENTE")) {
@@ -117,9 +128,17 @@ public class ClientesController extends TelaInicialController {
 	public void Voltar() {
 		carregarTela("Sistema.fxml");
 	}
+	
+	public String FormatarID(int id) {
+	    return String.format("%06d", id);
+	}
 
 	public void initialize() {
-		colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+		logo = new Image(getClass().getResourceAsStream("LogoETDv4.png"));
+		ivLogo.setImage(logo);
+		
+		
+		colId.setCellValueFactory(new PropertyValueFactory<>("idFormatado"));
 		colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		colCpfCnpj.setCellValueFactory(new PropertyValueFactory<>("cpfCnpj"));
 		colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
@@ -292,14 +311,13 @@ public class ClientesController extends TelaInicialController {
 			    aviso.showAndWait();
 			    return;
 			}
-			// Atualiza os atributos do objeto com os valores dos campos
+			
 			clienteSelecionado.setNome(txtNome.getText());
 			clienteSelecionado.setCpfCnpj(txtCpfCnpj.getText());
 			clienteSelecionado.setEmail(txtEmail.getText());
 
 			dao.Editar(clienteSelecionado);
 
-			// Recarrega a tabela para refletir a edição
 			carregarTabela(null);
 			limparCampos();
 
@@ -311,16 +329,20 @@ public class ClientesController extends TelaInicialController {
 
 	@FXML
 	public void Pesquisar() {
-		// usa o on action do botao pesquisar
 		if (!txtBuscar.getText().isEmpty()) {
 			cliente = dao.Buscar(txtBuscar.getText());
 			carregarTabela(txtBuscar.getText());
+			
+			if(cliente == null) {
+				carregarTabela(null);
+				return;
+			} else {
+				txtNome.setText(cliente.getNome());
+				txtCpfCnpj.setText(cliente.getCpfCnpj());
+				txtEmail.setText(cliente.getEmail());
 
-			txtNome.setText(cliente.getNome());
-			txtCpfCnpj.setText(cliente.getCpfCnpj());
-			txtEmail.setText(cliente.getEmail());
-
-			clienteSelecionado = cliente;
+				clienteSelecionado = cliente;	
+			}
 		} else {
 			Alert mensagem = new Alert(Alert.AlertType.ERROR);
 			mensagem.setContentText("Campo em branco!");
@@ -393,7 +415,6 @@ public class ClientesController extends TelaInicialController {
 
 	        HistoricoClienteController controller = loader.getController();
 
-	        // 🔥 CORREÇÃO AQUI
 	        controller.setCliente(clienteSelecionado);
 
 	        Stage stage = new Stage();

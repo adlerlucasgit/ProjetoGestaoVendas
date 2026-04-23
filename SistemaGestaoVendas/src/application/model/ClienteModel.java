@@ -18,6 +18,10 @@ public class ClienteModel {
 	public int getId() {
 		return this.id;
 	}
+	
+	public String getIdFormatado() {
+		return String.format("%06d", id);
+	}
 	public void setId(int id) {
 		this.id = id;
 	}

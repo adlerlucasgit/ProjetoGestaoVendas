@@ -1,18 +1,17 @@
 package application.model;
 
+
 public class MovEstoqueModel {
 	private int id;
 	private int idProd;
-	private int idUser;
 	private String nomeProd;
 	private String data;
 	private int quantidade;
 	private String tipo;
 	
-	public MovEstoqueModel(int id, int idProd, int idUser, String nomeProd, String data, int quantidade, String tipo) {
+	public MovEstoqueModel(int id, int idProd, String nomeProd, String data, int quantidade, String tipo) {
 		this.id = id;
 		this.idProd = idProd;
-		this.idUser = idUser;
 		this.nomeProd = nomeProd;
 		this.data = data;
 		this.quantidade = quantidade;
@@ -41,14 +40,6 @@ public class MovEstoqueModel {
 	
 	public void setIdProd(int idProd) {
 		this.idProd = idProd;
-	}
-	
-	public String getIdUser() {
-	    return String.format("%06d", this.idUser);
-	}
-	
-	public void setIdUser(int idUser) {
-		this.idUser = idUser;
 	}
 	
 	public String getNomeProd() {
@@ -83,5 +74,4 @@ public class MovEstoqueModel {
 		this.tipo = tipo;
 	}
 	
-
 }
