@@ -256,4 +256,68 @@ public class ProdutoDAO {
 
 	    return false;
 	}
+	
+	public void baixarEstoque(int produtoId, int quantidade) {
+
+	    String sql = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ?";
+
+	    try (Connection conn = Conexao.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setInt(1, quantidade);
+	        ps.setInt(2, produtoId);
+
+	        ps.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public void devolverEstoque(int produtoId, int quantidade) {
+
+	    String sql = "UPDATE produtos SET quantidade = quantidade + ? WHERE id = ?";
+
+	    try (Connection conn = Conexao.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setInt(1, quantidade);
+	        ps.setInt(2, produtoId);
+
+	        ps.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public ProdutoModel buscarPorId(int id) {
+
+	    String sql = "SELECT * FROM produtos WHERE id = ?";
+
+	    try (Connection conn = Conexao.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setInt(1, id);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+
+	            return new ProdutoModel(
+	                rs.getInt("id"),
+	                rs.getString("nome"),
+	                sql, sql, rs.getDouble("custo"),
+	                rs.getDouble("custoVenda"),
+	                rs.getInt("quantidade"),
+	                id, rs.getString("categoria")
+	            );
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
 }

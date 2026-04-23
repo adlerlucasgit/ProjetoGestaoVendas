@@ -2,7 +2,12 @@ package application.view;
 
 import java.util.Optional;
 
+import application.dao.ClienteDAO;
+import application.model.ClienteModel;
+import javafx.scene.control.ComboBox;
 import application.dao.ProdutoDAO;
+import application.dao.VendaDAO;
+import application.dao.VendaItemDAO;
 import application.model.ProdutoModel;
 import application.model.VendaItemModel;
 import javafx.collections.FXCollections;
@@ -24,6 +29,11 @@ import javafx.stage.Stage;
 
 public class VendasController extends TelaInicialController {
 
+	@FXML
+	private ComboBox<ClienteModel> cbCliente;
+
+	private ClienteModel clienteSelecionado;
+	
     @FXML
     private AnchorPane ap;
 
@@ -64,6 +74,16 @@ public class VendasController extends TelaInicialController {
     private ObservableList<VendaItemModel> itens = FXCollections.observableArrayList();
     
     public void initialize() {
+    	carregarClientes();
+
+    	cbCliente.getSelectionModel().selectedItemProperty().addListener(
+    	    (obs, oldValue, cliente) -> {
+    	        if (cliente != null) {
+    	            clienteSelecionado = cliente;
+    	        }
+    	    }
+    	);
+    	
 		colPrecoEst.setCellValueFactory(new PropertyValueFactory<>("custoVenda"));
 		colProdEst.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		carregarTabela(null);
@@ -138,6 +158,42 @@ public class VendasController extends TelaInicialController {
 	    });
 	    
 
+    }
+    
+    private void carregarClientes() {
+        cbCliente.setItems(
+            FXCollections.observableArrayList(
+                ClienteDAO.listarTodos(null)
+            )
+        );
+    }
+    
+    @FXML
+    public void buscarCliente() {
+
+        ClienteModel cliente = cbCliente.getSelectionModel().getSelectedItem();
+
+        if (cliente == null) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Selecione um cliente!");
+            a.showAndWait();
+            return;
+        }
+
+        if (cliente.getStatus().equals("INATIVO")) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Cliente INATIVO não pode comprar!");
+            a.showAndWait();
+            cbCliente.getSelectionModel().clearSelection();
+            clienteSelecionado = null;
+            return;
+        }
+
+        clienteSelecionado = cliente;
+
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setContentText("Cliente selecionado: " + cliente.getNome());
+        a.showAndWait();
     }
     
     private void pedirQuantidade(ProdutoModel produto) {
@@ -217,39 +273,76 @@ public class VendasController extends TelaInicialController {
     @FXML
     public void Finalizar() {
 
-        if (itens.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Atenção");
-            alert.setHeaderText("Nenhum item na compra");
-            alert.setContentText("Adicione produtos antes de finalizar.");
-            alert.showAndWait();
+        if (clienteSelecionado == null) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Selecione um cliente!");
+            a.showAndWait();
             return;
         }
 
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("Pagamento.fxml"));
-
-            Parent root = loader.load();
-
-            PagamentoController controller = loader.getController();
-
-            controller.setItens(itens);
-
-            double total = itens.stream()
-                    .mapToDouble(VendaItemModel::getSubtotal)
-                    .sum();
-
-            controller.setTotal(total);
-
-            Stage stage = new Stage();
-            stage.setTitle("Pagamento");
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (itens.isEmpty()) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Adicione produtos à venda!");
+            a.showAndWait();
+            return;
         }
+
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+
+        // 🔥 VALIDA ESTOQUE ANTES
+        for (VendaItemModel item : itens) {
+            ProdutoModel p = produtoDAO.buscarPorId(item.getProdutoId());
+
+            if (item.getQuantidade() > p.getQuantidade()) {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText("Estoque insuficiente para: " + p.getNome());
+                a.showAndWait();
+                return;
+            }
+        }
+
+        double total = 0;
+
+        for (VendaItemModel item : itens) {
+            total += item.getSubtotal();
+        }
+
+        int usuarioId = Sessao.IdUser;
+
+        VendaDAO vendaDAO = new VendaDAO();
+
+        // 🔥 SALVA VENDA PRIMEIRO
+        int vendaId = vendaDAO.inserirVenda(clienteSelecionado.getId(), usuarioId, total);
+
+        if (vendaId <= 0) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Erro ao salvar venda!");
+            a.showAndWait();
+            return;
+        }
+
+        VendaItemDAO itemDAO = new VendaItemDAO();
+
+        // 🔥 SALVA ITENS
+        for (VendaItemModel item : itens) {
+            itemDAO.inserirItem(
+                vendaId,
+                item.getProdutoId(),
+                item.getQuantidade(),
+                item.getPreco()
+            );
+        }
+
+        // 🔥 AGORA SIM: BAIXA ESTOQUE
+        for (VendaItemModel item : itens) {
+            produtoDAO.baixarEstoque(item.getProdutoId(), item.getQuantidade());
+        }
+
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setContentText("Venda finalizada com sucesso!");
+        a.showAndWait();
+
+        Cancelar(); // limpa carrinho
     }
     
     @FXML
