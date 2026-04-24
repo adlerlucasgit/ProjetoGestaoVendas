@@ -3,37 +3,26 @@ package application.view;
 import java.util.Optional;
 
 import application.dao.ClienteDAO;
-import application.model.ClienteModel;
-import javafx.scene.control.ComboBox;
 import application.dao.ProdutoDAO;
 import application.dao.VendaDAO;
 import application.dao.VendaItemDAO;
+import application.model.ClienteModel;
 import application.model.ProdutoModel;
 import application.model.VendaItemModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
 public class VendasController extends TelaInicialController {
 
-	@FXML
-	private ComboBox<ClienteModel> cbCliente;
+    @FXML
+    private ComboBox<ClienteModel> cbCliente;
 
-	private ClienteModel clienteSelecionado;
-	
+    private ClienteModel clienteSelecionado;
+
     @FXML
     private AnchorPane ap;
 
@@ -42,7 +31,7 @@ public class VendasController extends TelaInicialController {
 
     @FXML
     private Button btnFinalizar;
-    
+
     @FXML
     private TableView<VendaItemModel> tvCompra;
 
@@ -63,139 +52,115 @@ public class VendasController extends TelaInicialController {
 
     @FXML
     private TableView<ProdutoModel> tvProds;
-    
+
     @FXML
     private TableColumn<ProdutoModel, Double> colPrecoEst;
-    
+
     @FXML
     private TableColumn<ProdutoModel, String> colProdEst;
-    
-    ProdutoModel produtoSelecionado;
+
     private ObservableList<VendaItemModel> itens = FXCollections.observableArrayList();
-    
+
+    private double desconto = 0;
+
     public void initialize() {
-    	carregarClientes();
 
-    	cbCliente.getSelectionModel().selectedItemProperty().addListener(
-    	    (obs, oldValue, cliente) -> {
-    	        if (cliente != null) {
-    	            clienteSelecionado = cliente;
-    	        }
-    	    }
-    	);
-    	
-		colPrecoEst.setCellValueFactory(new PropertyValueFactory<>("custoVenda"));
-		colProdEst.setCellValueFactory(new PropertyValueFactory<>("nome"));
-		carregarTabela(null);
-		
-		colProd.setCellValueFactory(new PropertyValueFactory<>("produto"));
-		colQtd.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-		colPreco.setCellValueFactory(new PropertyValueFactory<>("preco"));
-		colTotal.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
+        carregarClientes();
 
-		tvCompra.setItems(itens);
-		
-	    tvProds.setOnMouseClicked(event -> {
-	        if (event.getClickCount() == 2) {
-	            ProdutoModel produto = tvProds.getSelectionModel().getSelectedItem();
+        cbCliente.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldValue, cliente) -> {
+                    if (cliente != null) {
+                        clienteSelecionado = cliente;
+                    }
+                }
+        );
 
-	            if (produto != null) {
-	                pedirQuantidade(produto);
-	            }
-	        }
-	    });
-	    
-	    tvCompra.setOnMouseClicked(event -> {
-	        if (event.getClickCount() == 2) {
+        colPrecoEst.setCellValueFactory(new PropertyValueFactory<>("custoVenda"));
+        colProdEst.setCellValueFactory(new PropertyValueFactory<>("nome"));
 
-	            VendaItemModel itemSelecionado =
-	                    tvCompra.getSelectionModel().getSelectedItem();
+        carregarTabela(null);
 
-	            if (itemSelecionado != null) {
+        colProd.setCellValueFactory(new PropertyValueFactory<>("produto"));
+        colQtd.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
+        colPreco.setCellValueFactory(new PropertyValueFactory<>("preco"));
+        colTotal.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
 
-	                TextInputDialog dialog = new TextInputDialog(
-	                        String.valueOf(itemSelecionado.getQuantidade())
-	                );
+        tvCompra.setItems(itens);
 
-	                dialog.setTitle("Editar Quantidade");
-	                dialog.setHeaderText("Produto: " + itemSelecionado.getProduto());
-	                dialog.setContentText("Nova quantidade:");
+        // adicionar produto
+        tvProds.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
 
-	                Optional<String> result = dialog.showAndWait();
+                ProdutoModel produto = tvProds.getSelectionModel().getSelectedItem();
 
-	                if (result.isPresent()) {
-	                    try {
-	                        int novaQtd = Integer.parseInt(result.get());
+                if (produto != null) {
+                    pedirQuantidade(produto);
+                }
+            }
+        });
 
-	                        if (novaQtd <= 0) {
-	                            itens.remove(itemSelecionado);
-	                        } else {
+        // editar item
+        tvCompra.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
 
-	                            itens.remove(itemSelecionado);
+                VendaItemModel itemSelecionado =
+                        tvCompra.getSelectionModel().getSelectedItem();
 
-	                            VendaItemModel atualizado = new VendaItemModel(
-	                                    itemSelecionado.getId(),
-	                                    itemSelecionado.getVendaId(),
-	                                    itemSelecionado.getProdutoId(),
-	                                    itemSelecionado.getProduto(),
-	                                    novaQtd,
-	                                    itemSelecionado.getPreco()
-	                            );
+                if (itemSelecionado != null) {
 
-	                            itens.add(atualizado);
-	                        }
+                    TextInputDialog dialog = new TextInputDialog(
+                            String.valueOf(itemSelecionado.getQuantidade())
+                    );
 
-	                        atualizarTotal();
+                    dialog.setTitle("Editar Quantidade");
+                    dialog.setHeaderText("Produto: " + itemSelecionado.getProduto());
+                    dialog.setContentText("Nova quantidade:");
 
-	                    } catch (NumberFormatException e) {
-	                        Alert alert = new Alert(Alert.AlertType.ERROR);
-	                        alert.setContentText("Digite um número válido!");
-	                        alert.showAndWait();
-	                    }
-	                }
-	            }
-	        }
-	    });
-	    
+                    Optional<String> result = dialog.showAndWait();
 
+                    if (result.isPresent()) {
+                        try {
+                            int novaQtd = Integer.parseInt(result.get());
+
+                            if (novaQtd <= 0) {
+                                itens.remove(itemSelecionado);
+                            } else {
+
+                                itens.remove(itemSelecionado);
+
+                                VendaItemModel atualizado = new VendaItemModel(
+                                        itemSelecionado.getId(),
+                                        itemSelecionado.getVendaId(),
+                                        itemSelecionado.getProdutoId(),
+                                        itemSelecionado.getProduto(),
+                                        novaQtd,
+                                        itemSelecionado.getPreco()
+                                );
+
+                                itens.add(atualizado);
+                            }
+
+                            atualizarTotal();
+
+                        } catch (NumberFormatException e) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setContentText("Digite um número válido!");
+                            alert.showAndWait();
+                        }
+                    }
+                }
+            }
+        });
     }
-    
+
     private void carregarClientes() {
         cbCliente.setItems(
-            FXCollections.observableArrayList(
-                ClienteDAO.listarTodos(null)
-            )
+                FXCollections.observableArrayList(
+                        ClienteDAO.listarTodos(null)
+                )
         );
     }
-    
-    @FXML
-    public void buscarCliente() {
 
-        ClienteModel cliente = cbCliente.getSelectionModel().getSelectedItem();
-
-        if (cliente == null) {
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setContentText("Selecione um cliente!");
-            a.showAndWait();
-            return;
-        }
-
-        if (cliente.getStatus().equals("INATIVO")) {
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setContentText("Cliente INATIVO não pode comprar!");
-            a.showAndWait();
-            cbCliente.getSelectionModel().clearSelection();
-            clienteSelecionado = null;
-            return;
-        }
-
-        clienteSelecionado = cliente;
-
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setContentText("Cliente selecionado: " + cliente.getNome());
-        a.showAndWait();
-    }
-    
     private void pedirQuantidade(ProdutoModel produto) {
 
         TextInputDialog dialog = new TextInputDialog("1");
@@ -211,6 +176,13 @@ public class VendasController extends TelaInicialController {
 
                 if (qtd <= 0) return;
 
+                if (qtd > produto.getEstoque()) {
+                    Alert a = new Alert(Alert.AlertType.ERROR);
+                    a.setContentText("Estoque insuficiente!");
+                    a.showAndWait();
+                    return;
+                }
+
                 adicionarItem(produto, qtd);
 
             } catch (NumberFormatException e) {
@@ -220,11 +192,12 @@ public class VendasController extends TelaInicialController {
             }
         }
     }
-    
+
     private void adicionarItem(ProdutoModel produto, int quantidade) {
 
         for (VendaItemModel item : itens) {
             if (item.getProdutoId() == produto.getId()) {
+
                 int novaQtd = item.getQuantidade() + quantidade;
 
                 itens.remove(item);
@@ -239,7 +212,6 @@ public class VendasController extends TelaInicialController {
                 );
 
                 itens.add(atualizado);
-
                 atualizarTotal();
                 return;
             }
@@ -255,10 +227,9 @@ public class VendasController extends TelaInicialController {
         );
 
         itens.add(item);
-
         atualizarTotal();
     }
-    
+
     private void atualizarTotal() {
 
         double total = 0;
@@ -267,18 +238,15 @@ public class VendasController extends TelaInicialController {
             total += item.getSubtotal();
         }
 
-        lblTotal.setText("R$ " + String.format("%.2f", total));
+        double totalComDesconto = total - (total * (desconto / 100));
+
+        lblTotal.setText("R$ " + String.format("%.2f", totalComDesconto));
     }
-    
+
     @FXML
     public void Finalizar() {
-    	if (clienteSelecionado.getStatus().equals("INATIVO")) {
-    	    Alert a = new Alert(Alert.AlertType.ERROR);
-    	    a.setContentText("Cliente inativo não pode comprar!");
-    	    a.showAndWait();
-    	    return;
-    	}
 
+        // ✅ validações
         if (clienteSelecionado == null) {
             Alert a = new Alert(Alert.AlertType.ERROR);
             a.setContentText("Selecione um cliente!");
@@ -286,19 +254,34 @@ public class VendasController extends TelaInicialController {
             return;
         }
 
+        if (clienteSelecionado.getStatus().equals("INATIVO")) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Cliente inativo não pode comprar!");
+            a.showAndWait();
+            return;
+        }
+
         if (itens.isEmpty()) {
             Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setContentText("Adicione produtos à venda!");
+            a.setContentText("Adicione produtos!");
             a.showAndWait();
             return;
         }
 
         ProdutoDAO produtoDAO = new ProdutoDAO();
 
+        // ✅ valida estoque (RN02)
         for (VendaItemModel item : itens) {
             ProdutoModel p = produtoDAO.buscarPorId(item.getProdutoId());
 
-            if (item.getQuantidade() > p.getQuantidade()) {
+            if (p == null) {
+                Alert a = new Alert(Alert.AlertType.ERROR);
+                a.setContentText("Produto não encontrado!");
+                a.showAndWait();
+                return;
+            }
+
+            if (item.getQuantidade() > p.getEstoque()) {
                 Alert a = new Alert(Alert.AlertType.ERROR);
                 a.setContentText("Estoque insuficiente para: " + p.getNome());
                 a.showAndWait();
@@ -306,8 +289,8 @@ public class VendasController extends TelaInicialController {
             }
         }
 
+        // ✅ calcula total
         double total = 0;
-
         for (VendaItemModel item : itens) {
             total += item.getSubtotal();
         }
@@ -316,8 +299,12 @@ public class VendasController extends TelaInicialController {
 
         VendaDAO vendaDAO = new VendaDAO();
 
-        // 🔥 SALVA VENDA PRIMEIRO
-        int vendaId = vendaDAO.inserirVenda(clienteSelecionado.getId(), usuarioId, total);
+        int vendaId = vendaDAO.inserirVendaComItens(
+                clienteSelecionado.getId(),
+                usuarioId,
+                total,
+                itens
+        );
 
         if (vendaId <= 0) {
             Alert a = new Alert(Alert.AlertType.ERROR);
@@ -326,66 +313,73 @@ public class VendasController extends TelaInicialController {
             return;
         }
 
-        VendaItemDAO itemDAO = new VendaItemDAO();
-
-        for (VendaItemModel item : itens) {
-            itemDAO.inserirItem(
-                vendaId,
-                item.getProdutoId(),
-                item.getQuantidade(),
-                item.getPreco()
-            );
-        }
-
-        // 🔥 AGORA SIM: BAIXA ESTOQUE
-        for (VendaItemModel item : itens) {
-            produtoDAO.baixarEstoque(item.getProdutoId(), item.getQuantidade());
-        }
+        gerarCupom(vendaId, total);
 
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setContentText("Venda finalizada com sucesso!");
         a.showAndWait();
 
-        Cancelar(); // limpa carrinho
+        Cancelar(); 
     }
-    
+
+    private void gerarCupom(int vendaId, double total) {
+
+        StringBuilder cupom = new StringBuilder();
+
+        cupom.append("===== CUPOM =====\n\n");
+
+        for (VendaItemModel item : itens) {
+            cupom.append(item.getProduto())
+                    .append(" x")
+                    .append(item.getQuantidade())
+                    .append(" - R$ ")
+                    .append(String.format("%.2f", item.getSubtotal()))
+                    .append("\n");
+        }
+
+        cupom.append("\nTOTAL: R$ ").append(String.format("%.2f", total));
+
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setHeaderText("Cupom");
+        a.setContentText(cupom.toString());
+        a.showAndWait();
+    }
+
     public void aplicarDesconto(double percentual) {
 
         if (percentual > 5 && !Sessao.tipoUsuario.equals("GERENTE")) {
             Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setContentText("Desconto acima de 5% só com gerente!");
+            a.setContentText("Apenas gerente pode aplicar >5%");
             a.showAndWait();
             return;
         }
 
-        double total = itens.stream().mapToDouble(VendaItemModel::getSubtotal).sum();
-
-        total = total - (total * percentual / 100);
-
-        lblTotal.setText("R$ " + String.format("%.2f", total));
+        desconto = percentual;
+        atualizarTotal();
     }
-    
+
     @FXML
     public void Cancelar() {
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Cancelar compra");
-        confirm.setHeaderText("Deseja realmente cancelar a compra?");
+        confirm.setHeaderText("Deseja cancelar?");
         confirm.setContentText("Todos os itens serão removidos.");
 
         Optional<ButtonType> result = confirm.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
 
-            itens.clear();         
-            tvCompra.refresh();   
-            lblTotal.setText("R$ 0,00"); 
+            itens.clear();
+            tvCompra.refresh();
+            lblTotal.setText("R$ 0,00");
         }
     }
+
     public void carregarTabela(String valor) {
-        ObservableList<ProdutoModel> lista = FXCollections.observableArrayList(ProdutoDAO.listarTodos(valor));
+        ObservableList<ProdutoModel> lista =
+                FXCollections.observableArrayList(ProdutoDAO.listarTodos(valor));
 
         tvProds.setItems(lista);
     }
-
 }
