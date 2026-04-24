@@ -58,7 +58,7 @@ public class VendasController extends TelaInicialController {
     private ObservableList<VendaItemModel> itens = FXCollections.observableArrayList();
 
     private double desconto = 0;
-
+    
     public void initialize() {
 
         cbCliente.setItems(FXCollections.observableArrayList(ClienteDAO.listarTodos(null)));
@@ -78,6 +78,7 @@ public class VendasController extends TelaInicialController {
         colTotal.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
 
         tvCompra.setItems(itens);
+        tvProds.setItems(FXCollections.observableArrayList(ProdutoDAO.listarTodos(null)));
 
         tvProds.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -87,6 +88,11 @@ public class VendasController extends TelaInicialController {
         });
     }
 
+    @FXML
+    public void Cancelar() {
+        btnFinalizar.getScene().getWindow().hide();
+    }
+    
     private void pedirQuantidade(ProdutoModel produto) {
 
         TextInputDialog dialog = new TextInputDialog("1");
@@ -94,11 +100,44 @@ public class VendasController extends TelaInicialController {
 
         Optional<String> result = dialog.showAndWait();
 
-        if (result.isPresent()) {
-            int qtd = Integer.parseInt(result.get());
-            if (qtd <= 0 || qtd > produto.getEstoque()) return;
-            adicionarItem(produto, qtd);
+        if (!result.isPresent()) {
+            return;
         }
+
+        int qtd;
+
+        try {
+            qtd = Integer.parseInt(result.get());
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Quantidade inválida!");
+            alert.showAndWait();
+            return;
+        }
+
+        if (qtd <= 0) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Quantidade deve ser maior que zero!");
+            alert.showAndWait();
+            return;
+        }
+
+        int estoqueDisponivel = produto.getEstoque();
+
+        for (VendaItemModel item : itens) {
+            if (item.getProdutoId() == produto.getId()) {
+                estoqueDisponivel -= item.getQuantidade();
+            }
+        }
+
+        if (qtd > estoqueDisponivel) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Estoque insuficiente!");
+            alert.showAndWait();
+            return;
+        }
+
+        adicionarItem(produto, qtd);
     }
 
     private void adicionarItem(ProdutoModel produto, int quantidade) {
@@ -166,6 +205,19 @@ public class VendasController extends TelaInicialController {
     
     @FXML
     public void Finalizar() {
+    	if (clienteSelecionado == null) {
+    	    Alert a = new Alert(Alert.AlertType.WARNING);
+    	    a.setContentText("Selecione um cliente válido!");
+    	    a.showAndWait();
+    	    return;
+    	}
+    	
+    	if (itens.isEmpty()) {
+    	    Alert a = new Alert(Alert.AlertType.WARNING);
+    	    a.setContentText("Adicione produtos à venda!");
+    	    a.showAndWait();
+    	    return;
+    	}
         double total = 0;
         for (VendaItemModel item : itens) {
             total += item.getSubtotal();
@@ -190,8 +242,12 @@ public class VendasController extends TelaInicialController {
             stage.setTitle("Pagamento");
             stage.showAndWait();
 
-            // depois que fechar pagamento:
-            concluirVenda(total);
+            if (controller.isConfirmado()) {
+                
+                String formaPagamento = controller.getFormaPagamento(); 
+
+                concluirVenda(total); 
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -209,6 +265,9 @@ public class VendasController extends TelaInicialController {
                 total,
                 itens
         );
+        for (VendaItemModel item : itens) {
+            produtoDAO.baixarEstoque(item.getProdutoId(), item.getQuantidade());
+        }
 
         gerarCupom(vendaId, total);
 
@@ -219,5 +278,37 @@ public class VendasController extends TelaInicialController {
         itens.clear();
         tvCompra.refresh();
         lblTotal.setText("R$ 0,00");
+    }
+    
+    private void gerarCupom(int vendaId, double total) {
+
+        StringBuilder cupom = new StringBuilder();
+
+        cupom.append("========= CUPOM NÃO FISCAL =========\n");
+        cupom.append("Venda Nº: ").append(vendaId).append("\n");
+        cupom.append("------------------------------------\n");
+
+        if (clienteSelecionado != null) {
+            cupom.append("Cliente: ").append(clienteSelecionado.getNome()).append("\n");
+        }
+
+        cupom.append("------------------------------------\n");
+
+        for (VendaItemModel item : itens) {
+            cupom.append(item.getProduto())
+                 .append(" | Qtd: ").append(item.getQuantidade())
+                 .append(" | R$ ").append(String.format("%.2f", item.getSubtotal()))
+                 .append("\n");
+        }
+
+        cupom.append("------------------------------------\n");
+        cupom.append("TOTAL: R$ ").append(String.format("%.2f", total)).append("\n");
+        cupom.append("====================================\n");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Cupom");
+        alert.setHeaderText("Resumo da Venda");
+        alert.setContentText(cupom.toString());
+        alert.showAndWait();
     }
 }

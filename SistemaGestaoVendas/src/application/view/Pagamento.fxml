@@ -4,13 +4,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="300.0" prefWidth="400.0"
+<AnchorPane prefHeight="350.0" prefWidth="400.0"
             xmlns="http://javafx.com/javafx/25"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="application.view.PagamentoController">
 
     <children>
 
+        <!-- Título -->
         <Label text="Pagamento"
                layoutX="0" layoutY="0"
                prefWidth="400"
@@ -21,6 +22,7 @@
             </font>
         </Label>
 
+        <!-- Total -->
         <Label text="Total:"
                layoutX="30" layoutY="60"/>
 
@@ -29,6 +31,7 @@
                text="R$ 0,00"
                style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
+        <!-- Forma de pagamento -->
         <Label text="Forma de pagamento:"
                layoutX="30" layoutY="110"/>
 
@@ -36,12 +39,28 @@
                   layoutX="30" layoutY="140"
                   prefWidth="200"/>
 
+        <!-- Valor pago -->
+        <Label text="Valor pago:"
+               layoutX="30" layoutY="180"/>
+
+        <TextField fx:id="txtValorPago"
+                   layoutX="30" layoutY="200"
+                   prefWidth="200"
+                   onKeyReleased="#calcularTroco"/>
+
+        <!-- Troco -->
+        <Label fx:id="lblTroco"
+               layoutX="30" layoutY="230"
+               text="Troco: R$ 0,00"
+               style="-fx-font-weight: bold;"/>
+
+        <!-- Botões -->
         <Button text="Confirmar"
-                layoutX="60" layoutY="220"
+                layoutX="60" layoutY="280"
                 onAction="#Confirmar"/>
 
         <Button text="Cancelar"
-                layoutX="200" layoutY="220"
+                layoutX="200" layoutY="280"
                 onAction="#Cancelar"/>
 
     </children>
