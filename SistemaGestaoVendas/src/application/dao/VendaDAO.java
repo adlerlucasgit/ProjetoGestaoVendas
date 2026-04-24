@@ -4,33 +4,85 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 
+import application.model.VendaItemModel;
 import application.util.Conexao;
 
 public class VendaDAO {
-	public int inserirVenda(int clienteId, int usuarioId, double total) {
+	public int inserirVendaComItens(int clienteId, int usuarioId, double total, List<VendaItemModel> itens) {
 
-	    String sql = "INSERT INTO vendas (cliente_id, usuario_id, total) VALUES (?, ?, ?)";
+	    String sqlVenda = "INSERT INTO vendas (cliente_id, usuario_id, total) VALUES (?, ?, ?)";
+	    String sqlItem = "INSERT INTO vendaItens (venda_id, produto_id, quantidade, preco) VALUES (?, ?, ?, ?)";
+	    String sqlEstoque = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ?";
 
-	    try (Connection conn = Conexao.getConnection();
-	         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+	    try (Connection conn = Conexao.getConnection()) {
 
-	        ps.setInt(1, clienteId);
-	        ps.setInt(2, usuarioId);
-	        ps.setDouble(3, total);
+	        conn.setAutoCommit(false); // 🔥 inicia transação
 
-	        ps.executeUpdate();
+	        PreparedStatement psVenda = conn.prepareStatement(sqlVenda, Statement.RETURN_GENERATED_KEYS);
+	        psVenda.setInt(1, clienteId);
+	        psVenda.setInt(2, usuarioId);
+	        psVenda.setDouble(3, total);
+	        psVenda.executeUpdate();
 
-	        ResultSet rs = ps.getGeneratedKeys();
+	        ResultSet rs = psVenda.getGeneratedKeys();
+	        rs.next();
+	        int vendaId = rs.getInt(1);
 
-	        if (rs.next()) {
-	            return rs.getInt(1); // ID da venda
+	        PreparedStatement psItem = conn.prepareStatement(sqlItem);
+	        PreparedStatement psEstoque = conn.prepareStatement(sqlEstoque);
+
+	        for (VendaItemModel item : itens) {
+
+	            // item
+	            psItem.setInt(1, vendaId);
+	            psItem.setInt(2, item.getProdutoId());
+	            psItem.setInt(3, item.getQuantidade());
+	            psItem.setDouble(4, item.getPreco());
+	            psItem.executeUpdate();
+
+	            // estoque
+	            psEstoque.setInt(1, item.getQuantidade());
+	            psEstoque.setInt(2, item.getProdutoId());
+	            psEstoque.executeUpdate();
 	        }
+
+	        conn.commit(); // ✅ sucesso
+	        return vendaId;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return -1;
+	    }
+	}
+	
+	public void cancelarVenda(int vendaId) {
+
+	    String sqlUpdate = "UPDATE vendas SET status='CANCELADA' WHERE id=?";
+	    String sqlItens = "SELECT produto_id, quantidade FROM vendaItens WHERE venda_id=?";
+	    String sqlEstoque = "UPDATE produtos SET quantidade = quantidade + ? WHERE id=?";
+
+	    try (Connection conn = Conexao.getConnection()) {
+
+	        PreparedStatement psItens = conn.prepareStatement(sqlItens);
+	        psItens.setInt(1, vendaId);
+
+	        ResultSet rs = psItens.executeQuery();
+
+	        while (rs.next()) {
+	            PreparedStatement psEstoque = conn.prepareStatement(sqlEstoque);
+	            psEstoque.setInt(1, rs.getInt("quantidade"));
+	            psEstoque.setInt(2, rs.getInt("produto_id"));
+	            psEstoque.executeUpdate();
+	        }
+
+	        PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
+	        psUpdate.setInt(1, vendaId);
+	        psUpdate.executeUpdate();
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-
-	    return -1;
 	}
 }

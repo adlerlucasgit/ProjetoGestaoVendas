@@ -272,6 +272,12 @@ public class VendasController extends TelaInicialController {
     
     @FXML
     public void Finalizar() {
+    	if (clienteSelecionado.getStatus().equals("INATIVO")) {
+    	    Alert a = new Alert(Alert.AlertType.ERROR);
+    	    a.setContentText("Cliente inativo não pode comprar!");
+    	    a.showAndWait();
+    	    return;
+    	}
 
         if (clienteSelecionado == null) {
             Alert a = new Alert(Alert.AlertType.ERROR);
@@ -289,7 +295,6 @@ public class VendasController extends TelaInicialController {
 
         ProdutoDAO produtoDAO = new ProdutoDAO();
 
-        // 🔥 VALIDA ESTOQUE ANTES
         for (VendaItemModel item : itens) {
             ProdutoModel p = produtoDAO.buscarPorId(item.getProdutoId());
 
@@ -323,7 +328,6 @@ public class VendasController extends TelaInicialController {
 
         VendaItemDAO itemDAO = new VendaItemDAO();
 
-        // 🔥 SALVA ITENS
         for (VendaItemModel item : itens) {
             itemDAO.inserirItem(
                 vendaId,
@@ -343,6 +347,22 @@ public class VendasController extends TelaInicialController {
         a.showAndWait();
 
         Cancelar(); // limpa carrinho
+    }
+    
+    public void aplicarDesconto(double percentual) {
+
+        if (percentual > 5 && !Sessao.tipoUsuario.equals("GERENTE")) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setContentText("Desconto acima de 5% só com gerente!");
+            a.showAndWait();
+            return;
+        }
+
+        double total = itens.stream().mapToDouble(VendaItemModel::getSubtotal).sum();
+
+        total = total - (total * percentual / 100);
+
+        lblTotal.setText("R$ " + String.format("%.2f", total));
     }
     
     @FXML

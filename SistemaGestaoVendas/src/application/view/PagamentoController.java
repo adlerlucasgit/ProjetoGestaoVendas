@@ -70,6 +70,27 @@ public class PagamentoController {
             fecharTela();
         }
     }
+    
+    @FXML
+    private TextField txtValorPago;
+
+    @FXML
+    private Label lblTroco;
+
+    @FXML
+    public void calcularTroco() {
+
+        double pago = Double.parseDouble(txtValorPago.getText());
+
+        if (pago < total) {
+            lblTroco.setText("Valor insuficiente!");
+            return;
+        }
+
+        double troco = pago - total;
+
+        lblTroco.setText("Troco: R$ " + String.format("%.2f", troco));
+    }
 
     @FXML
     public void Cancelar() {
