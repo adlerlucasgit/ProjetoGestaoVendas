@@ -259,7 +259,7 @@ public class ProdutoDAO {
 	
 	public void baixarEstoque(int produtoId, int quantidade) {
 
-	    String sql = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ?";
+	    String sql = "UPDATE produtos SET estoque = estoque - ? WHERE id = ?";
 
 	    try (Connection conn = Conexao.getConnection();
 	         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -276,7 +276,7 @@ public class ProdutoDAO {
 	
 	public void devolverEstoque(int produtoId, int quantidade) {
 
-	    String sql = "UPDATE produtos SET quantidade = quantidade + ? WHERE id = ?";
+	    String sql = "UPDATE produtos SET estoque = estoque + ? WHERE id = ?";
 
 	    try (Connection conn = Conexao.getConnection();
 	         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -307,10 +307,13 @@ public class ProdutoDAO {
 	            return new ProdutoModel(
 	                rs.getInt("id"),
 	                rs.getString("nome"),
-	                sql, sql, rs.getDouble("custo"),
-	                rs.getDouble("custoVenda"),
-	                rs.getInt("quantidade"),
-	                id, rs.getString("categoria")
+	                rs.getString("codigo_barras"),
+	                rs.getString("descricao"),
+	                rs.getDouble("preco_custo"),   // ✅ correto
+	                rs.getDouble("preco_venda"),   // ✅ correto
+	                rs.getInt("estoque"),          // ✅ correto
+	                rs.getInt("estoque_minimo"),
+	                rs.getString("categoria")
 	            );
 	        }
 

@@ -14,7 +14,7 @@ public class VendaDAO {
 
 	    String sqlVenda = "INSERT INTO vendas (cliente_id, usuario_id, total) VALUES (?, ?, ?)";
 	    String sqlItem = "INSERT INTO vendaItens (venda_id, produto_id, quantidade, preco) VALUES (?, ?, ?, ?)";
-	    String sqlEstoque = "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ?";
+	    String sqlEstoque = "UPDATE produtos SET estoque = estoque - ? WHERE id = ?";
 
 	    try (Connection conn = Conexao.getConnection()) {
 
@@ -61,7 +61,7 @@ public class VendaDAO {
 
 	    String sqlUpdate = "UPDATE vendas SET status='CANCELADA' WHERE id=?";
 	    String sqlItens = "SELECT produto_id, quantidade FROM vendaItens WHERE venda_id=?";
-	    String sqlEstoque = "UPDATE produtos SET quantidade = quantidade + ? WHERE id=?";
+	    String sqlEstoque = "UPDATE produtos SET estoque = estoque + ? WHERE id=?";
 
 	    try (Connection conn = Conexao.getConnection()) {
 

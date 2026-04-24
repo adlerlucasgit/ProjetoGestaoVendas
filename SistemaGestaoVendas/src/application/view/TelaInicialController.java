@@ -66,6 +66,7 @@ public class TelaInicialController {
     	if(logado != null) {
     		Sessao.tipoUsuario = logado.getTipo();
     		Sessao.Usuario = logado.getNome();
+    		Sessao.IdUser = logado.getId();
     		carregarTela("Sistema.fxml");
 
     	} else if(erro != "") {

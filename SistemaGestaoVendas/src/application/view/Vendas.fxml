@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -12,14 +13,14 @@
 	<children>
 		<AnchorPane fx:id="ap" prefHeight="200.0" prefWidth="200.0">
 			<children>
+			
 				<Label alignment="CENTER" layoutX="355.0" layoutY="115.0" prefHeight="15.0" prefWidth="600.0" style="-fx-background-color: gray;" text="Ponto de venda" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 					<font>
 						<Font name="System Bold" size="18.0" />
 					</font>
 				</Label>
-				<Label layoutX="15.0" layoutY="43.0" text="Cliente:" />
-
-<ComboBox fx:id="cbCliente" layoutX="80.0" layoutY="10.0" prefWidth="250.0" />
+				<Label layoutX="15.0" layoutY="56.0" text="Cliente:" />
+<ComboBox fx:id="cbCliente" layoutX="57.0" layoutY="52.0" prefHeight="26.0" prefWidth="187.0" />
 
 <Button layoutX="253.0" layoutY="52.0" onAction="#buscarCliente" text="Buscar" />
 				<TableView fx:id="tvProds" layoutY="27.0" prefHeight="373.0" prefWidth="267.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
@@ -41,7 +42,7 @@
 						<Font size="18.0" />
 					</font>
 				</Label>
-				<Button fx:id="btnFinalizar" layoutX="201.0" layoutY="342.0" mnemonicParsing="false" text="Finalizar Compra" />
+				<Button fx:id="btnFinalizar" layoutX="201.0" layoutY="342.0" onAction="#Finalizar" text="Finalizar Compra" />
 				<Button fx:id="btnCancelar" layoutX="57.0" layoutY="342.0" mnemonicParsing="false" onAction="#Cancelar" text="Cancelar" />
 				<Label fx:id="lblTotal" layoutX="14.0" layoutY="313.0" text="R$" wrapText="true">
 					<font>
