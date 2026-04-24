@@ -111,7 +111,15 @@ public class NovoUsuarioController extends TelaInicialController {
 	
     @FXML
     public void MovEstoque() {
-        carregarTela("MovEstoque.fxml");
+		if(Sessao.tipoUsuario.equals("ESTOQUISTA") || Sessao.tipoUsuario.equals("GERENTE")) {
+			carregarTela("MovEstoque.fxml");
+		}else {
+			Alert a = new Alert(Alert.AlertType.INFORMATION);
+    		a.setHeaderText("Acesso negado");
+			a.setContentText("Tela indisponível para vendedores");
+			a.showAndWait();
+			return;
+		}
     }
 	
 	@FXML

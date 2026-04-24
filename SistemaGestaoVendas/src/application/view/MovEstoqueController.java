@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import application.dao.ProdutoDAO;
 import application.model.ProdutoModel;
+import application.view.TelaInicialController.Sessao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -133,10 +134,18 @@ public class MovEstoqueController extends TelaInicialController {
 		carregarTela("Sistema.fxml");
 	}
 
-	@FXML
-	public void MovEstoque() {
-		carregarTela("MovEstoque.fxml");
-	}
+    @FXML
+    public void MovEstoque() {
+		if(Sessao.tipoUsuario.equals("ESTOQUISTA") || Sessao.tipoUsuario.equals("GERENTE")) {
+			carregarTela("MovEstoque.fxml");
+		}else {
+			Alert a = new Alert(Alert.AlertType.INFORMATION);
+    		a.setHeaderText("Acesso negado");
+			a.setContentText("Tela indisponível para vendedores");
+			a.showAndWait();
+			return;
+		}
+    }
 
 	public String FormatarID(int id) {
 		return String.format("%06d", id);

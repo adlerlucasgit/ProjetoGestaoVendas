@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import application.dao.ProdutoDAO;
 import application.model.ProdutoModel;
+import application.view.TelaInicialController.Sessao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -111,7 +112,15 @@ public class ProdutosController extends TelaInicialController {
 	
     @FXML
     public void MovEstoque() {
-        carregarTela("MovEstoque.fxml");
+		if(Sessao.tipoUsuario.equals("ESTOQUISTA") || Sessao.tipoUsuario.equals("GERENTE")) {
+			carregarTela("MovEstoque.fxml");
+		}else {
+			Alert a = new Alert(Alert.AlertType.INFORMATION);
+    		a.setHeaderText("Acesso negado");
+			a.setContentText("Tela indisponível para vendedores");
+			a.showAndWait();
+			return;
+		}
     }
     
 	public String FormatarID(int id) {
@@ -129,10 +138,38 @@ public class ProdutosController extends TelaInicialController {
 		
 		return precoFormatado;
 	}
+	
+	private double calcularPrecoVenda(double custo) {
+	    double margem = 30; // % (pode vir do banco depois)
+	    return custo + (custo * (margem / 100));
+	}
+	
+	private String formatarNumero(double valor) {
+	    return String.format(java.util.Locale.US, "%.2f", valor);
+	}
     
     public void initialize() {
         Image logo = new Image(getClass().getResourceAsStream("LogoETDv4.png"));
         ivLogo.setImage(logo);
+        
+        txtCusto.textProperty().addListener((obs, oldValue, newValue) -> {
+
+            if (newValue.isEmpty()) return;
+
+            try {
+                double custo = Double.parseDouble(newValue);
+
+                double precoSugerido = calcularPrecoVenda(custo);
+
+                // só sugere se usuário ainda não alterou manualmente
+                if (!txtVenda.isFocused()) {
+                	txtVenda.setText(formatarNumero(precoSugerido));
+                }
+
+            } catch (Exception e) {
+                // ignora
+            }
+        });
 
         colIdP.setCellValueFactory(new PropertyValueFactory<>("idFormatado"));
         colProd.setCellValueFactory(new PropertyValueFactory<>("nome"));

@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" prefWidth="400.0"
+<AnchorPane prefHeight="450.0" prefWidth="450.0"
             xmlns="http://javafx.com/javafx/25"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="application.view.PagamentoController">
@@ -14,7 +14,7 @@
         <!-- Título -->
         <Label text="Pagamento"
                layoutX="0" layoutY="0"
-               prefWidth="400"
+               prefWidth="450"
                alignment="CENTER"
                style="-fx-background-color: #2c3e50; -fx-text-fill: white;">
             <font>
@@ -33,34 +33,55 @@
 
         <!-- Forma de pagamento -->
         <Label text="Forma de pagamento:"
-               layoutX="30" layoutY="110"/>
+               layoutX="30" layoutY="100"/>
 
         <ComboBox fx:id="cbPagamento"
-                  layoutX="30" layoutY="140"
+                  layoutX="30" layoutY="130"
                   prefWidth="200"/>
 
         <!-- Valor pago -->
-        <Label text="Valor pago:"
-               layoutX="30" layoutY="180"/>
+        <Label text="Valor:"
+               layoutX="250" layoutY="100"/>
 
         <TextField fx:id="txtValorPago"
-                   layoutX="30" layoutY="200"
-                   prefWidth="200"
-                   onKeyReleased="#calcularTroco"/>
+                   layoutX="250" layoutY="130"
+                   prefWidth="120"/>
+
+        <!-- Botão adicionar -->
+        <Button text="Adicionar"
+                layoutX="150" layoutY="170"
+                onAction="#adicionarPagamento"/>
+
+        <!-- Tabela de pagamentos -->
+        <TableView fx:id="tvPagamentos"
+                   layoutX="30" layoutY="210"
+                   prefWidth="380"
+                   prefHeight="120">
+
+            <columns>
+                <TableColumn fx:id="colTipo"
+                             text="Tipo"
+                             prefWidth="180"/>
+                <TableColumn fx:id="colValor"
+                             text="Valor"
+                             prefWidth="180"/>
+            </columns>
+
+        </TableView>
 
         <!-- Troco -->
         <Label fx:id="lblTroco"
-               layoutX="30" layoutY="230"
+               layoutX="30" layoutY="340"
                text="Troco: R$ 0,00"
                style="-fx-font-weight: bold;"/>
 
         <!-- Botões -->
         <Button text="Confirmar"
-                layoutX="60" layoutY="280"
+                layoutX="80" layoutY="380"
                 onAction="#Confirmar"/>
 
         <Button text="Cancelar"
-                layoutX="200" layoutY="280"
+                layoutX="250" layoutY="380"
                 onAction="#Cancelar"/>
 
     </children>

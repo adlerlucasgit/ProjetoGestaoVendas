@@ -69,22 +69,38 @@ public class SistemaController extends TelaInicialController{
 	
     @FXML
     public void MovEstoque() {
-        carregarTela("MovEstoque.fxml");
+		if(Sessao.tipoUsuario.equals("ESTOQUISTA") || Sessao.tipoUsuario.equals("GERENTE")) {
+			carregarTela("MovEstoque.fxml");
+		}else {
+			Alert a = new Alert(Alert.AlertType.INFORMATION);
+    		a.setHeaderText("Acesso negado");
+			a.setContentText("Tela indisponível para vendedores");
+			a.showAndWait();
+			return;
+		}
     }
     
     @FXML
     public void PDV() {
-    	try {
-    		FXMLLoader loader = new FXMLLoader(
-    				getClass().getResource("Vendas.fxml"));
-    		Parent root = loader.load();
-    		VendasController controller = loader.getController();
-    		Stage stage= new Stage();
-    		stage.setScene(new Scene (root));
-    		stage.show();
-        } catch(Exception e) {
-    		e.printStackTrace();
-    	}
+    	if(Sessao.tipoUsuario.equals("ESTOQUISTA")) {
+			Alert a = new Alert(Alert.AlertType.INFORMATION);
+    		a.setHeaderText("Acesso negado");
+			a.setContentText("Tela indisponível para estoquistas");
+			a.showAndWait();
+			return;
+		}else {
+	    	try {
+	    		FXMLLoader loader = new FXMLLoader(
+	    				getClass().getResource("Vendas.fxml"));
+	    		Parent root = loader.load();
+	    		VendasController controller = loader.getController();
+	    		Stage stage= new Stage();
+	    		stage.setScene(new Scene (root));
+	    		stage.show();
+	        } catch(Exception e) {
+	    		e.printStackTrace();
+	    	}
+		}
     }
 	
 }

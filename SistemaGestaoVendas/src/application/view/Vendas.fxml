@@ -13,16 +13,16 @@
 	<children>
 		<AnchorPane fx:id="ap" prefHeight="200.0" prefWidth="200.0">
 			<children>
-			
+
 				<Label alignment="CENTER" layoutX="355.0" layoutY="115.0" prefHeight="15.0" prefWidth="600.0" style="-fx-background-color: gray;" text="Ponto de venda" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 					<font>
 						<Font name="System Bold" size="18.0" />
 					</font>
 				</Label>
 				<Label layoutX="15.0" layoutY="56.0" text="Cliente:" />
-<ComboBox fx:id="cbCliente" layoutX="57.0" layoutY="52.0" prefHeight="26.0" prefWidth="187.0" />
+				<ComboBox fx:id="cbCliente" layoutX="57.0" layoutY="52.0" prefHeight="26.0" prefWidth="187.0" />
 
-<Button layoutX="253.0" layoutY="52.0" onAction="#buscarCliente" text="Buscar" />
+				<Button layoutX="253.0" layoutY="52.0" onAction="#buscarCliente" text="Buscar" />
 				<TableView fx:id="tvProds" layoutY="27.0" prefHeight="373.0" prefWidth="267.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
 					<columns>
 						<TableColumn fx:id="colProdEst" prefWidth="154.40002137422562" text="Produto" />
@@ -37,13 +37,17 @@
 						<TableColumn fx:id="colTotal" prefWidth="75.99997558593748" text="Total" />
 					</columns>
 				</TableView>
+
+				<Button layoutX="200.0" layoutY="327.0" onAction="#aplicarDesconto" text="Aplicar Desconto" />
+
+				<Label fx:id="lblDesconto" layoutX="49.0" layoutY="331.0" text="Desconto: 0%" />
 				<Label layoutX="14.0" layoutY="286.0" text="Valor Total" wrapText="true">
 					<font>
 						<Font size="18.0" />
 					</font>
 				</Label>
-				<Button fx:id="btnFinalizar" layoutX="201.0" layoutY="342.0" onAction="#Finalizar" text="Finalizar Compra" />
-				<Button fx:id="btnCancelar" layoutX="57.0" layoutY="342.0" mnemonicParsing="false" onAction="#Cancelar" text="Cancelar" />
+				<Button fx:id="btnFinalizar" layoutX="200.0" layoutY="355.0" onAction="#Finalizar" text="Finalizar Compra" />
+				<Button fx:id="btnCancelar" layoutX="55.0" layoutY="355.0" mnemonicParsing="false" onAction="#Cancelar" text="Cancelar" />
 				<Label fx:id="lblTotal" layoutX="14.0" layoutY="313.0" text="R$" wrapText="true">
 					<font>
 						<Font size="18.0" />
